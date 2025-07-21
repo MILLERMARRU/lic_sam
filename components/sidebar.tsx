@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { useState } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   CreditCard,
   Wine,
@@ -11,19 +11,24 @@ import {
   LogOut,
   Store,
   Menu,
-  X
-} from 'lucide-react';
+  X,
+} from "lucide-react";
+import { Button } from "./ui/button";
+import { supabase } from "@/lib/supabase";
+import { useRouter } from "next/navigation";
 
 const navItems = [
-  { href: '/admin/ventas', label: 'Sales', icon: CreditCard },
-  { href: '/admin/productos', label: 'Products', icon: Wine },
-  { href: '/admin/inventario', label: 'Inventory', icon: Package },
-  { href: '/admin/vendedores', label: 'Sellers', icon: Users },
+  { href: "/admin/ventas", label: "Sales", icon: CreditCard },
+  { href: "/admin/productos", label: "Products", icon: Wine },
+  { href: "/admin/inventario", label: "Inventory", icon: Package },
+  { href: "/admin/vendedores", label: "Sellers", icon: Users },
 ];
 
 export default function Navbar() {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
+
+  const router = useRouter();
 
   return (
     <>
@@ -41,7 +46,7 @@ export default function Navbar() {
       {/* Sidebar */}
       <div
         className={`fixed top-0 left-0 z-40 h-full bg-white border-r w-64 p-6 text-sm transform transition-transform duration-300 ease-in-out flex flex-col justify-between ${
-          isOpen ? 'translate-x-0' : '-translate-x-full'
+          isOpen ? "translate-x-0" : "-translate-x-full"
         } md:relative md:translate-x-0`}
       >
         <div>
@@ -68,8 +73,8 @@ export default function Navbar() {
                   href={href}
                   className={`flex items-center px-3 py-2 rounded-lg transition-colors ${
                     pathname === href
-                      ? 'bg-gray-100 text-black'
-                      : 'text-gray-700 hover:bg-gray-100'
+                      ? "bg-gray-100 text-black"
+                      : "text-gray-700 hover:bg-gray-100"
                   }`}
                   onClick={() => setIsOpen(false)}
                 >
@@ -83,14 +88,17 @@ export default function Navbar() {
 
         {/* Logout fixed to bottom */}
         <div className="pt-6">
-          <Link
-            href="/login"
-            className="flex items-center px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors"
-            onClick={() => setIsOpen(false)}
+          <Button
+            variant="ghost"
+            onClick={async () => {
+              await supabase.auth.signOut();
+              router.push("/login");
+            }}
+            className="flex items-center justify-start px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors w-full text-left"
           >
             <LogOut className="w-5 h-5 mr-3" />
             Log out
-          </Link>
+          </Button>
         </div>
       </div>
     </>

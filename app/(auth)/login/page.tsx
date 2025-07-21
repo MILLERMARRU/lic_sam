@@ -1,18 +1,36 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Mail, Lock } from "lucide-react";
+import { supabase } from "@/lib/supabase";
+import { toast } from "sonner";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Aquí va la lógica de autenticación
-    console.log("Login", { email, password });
+    setLoading(true);
+
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    setLoading(false);
+
+    if (error) {
+      toast.error("Login failed: " + error.message);
+    } else {
+      toast.success("Login successful!");
+      router.push("/admin");
+    }
   };
 
   return (
@@ -24,7 +42,7 @@ export default function LoginPage() {
         </header>
 
         <form onSubmit={handleLogin} className="space-y-4">
-          <div className="relative">
+          <div>
             <label className="block text-sm font-medium text-gray-700">Email</label>
             <div className="relative">
               <Mail className="absolute left-3 top-2 h-5 w-5 text-gray-400" />
@@ -39,7 +57,7 @@ export default function LoginPage() {
             </div>
           </div>
 
-          <div className="relative">
+          <div>
             <label className="block text-sm font-medium text-gray-700">Password</label>
             <div className="relative">
               <Lock className="absolute left-3 top-2 h-5 w-5 text-gray-400" />
@@ -60,8 +78,8 @@ export default function LoginPage() {
             </a>
           </div>
 
-          <Button type="submit" className="w-full">
-            Log in
+          <Button type="submit" className="w-full" disabled={loading}>
+            {loading ? "Logging in..." : "Log in"}
           </Button>
         </form>
 
@@ -75,7 +93,7 @@ export default function LoginPage() {
         </div>
 
         <p className="text-center text-sm text-gray-600">
-          Don't have an account?{' '}
+          Don't have an account?{" "}
           <a href="#" className="text-blue-600 hover:underline">
             Register
           </a>

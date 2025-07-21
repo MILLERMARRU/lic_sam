@@ -1,10 +1,15 @@
+"use client";
+
 import Sidebar from "@/components/sidebar";
+import { useAutoLogout } from "@/hooks/useAutoLogout";
 
 export default function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+
+  useAutoLogout();
   return (
     <div className="flex min-h-screen">
       <Sidebar />
